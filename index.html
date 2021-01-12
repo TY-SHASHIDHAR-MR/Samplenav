@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>DiagramFlowJS Demo</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="./fontawesome-free-5.15.1-web/css/all.css">
+    <!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css"
+        integrity="sha384-TX8t27EcRE3e/ihU7zmQxVncDAy5uIKz4rEkgIXeMed4M0jlfIDPvg6uqKI2xXr2" crossorigin="anonymous"> -->
+    <script src="diagramflow.js"></script>
+    <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js">
+    </script>
+    <style>
+        #container {
+            width: 100%;
+            height: 500px;
+            position: relative;
+        }
+
+        #controls {
+            bottom: 0;
+
+
+            position: absolute;
+            width: 100%;
+
+        }
+
+
+        button {
+            border: none;
+
+        }
+    </style>
+
+
+</head>
+
+<body>
+    <h1>ASSESMENT 1- CNAVAS DRAG</h1>
+    <div id="container">
+        <canvas id="myCanvas" width="100" height="100"></canvas>
+      
+    </div>
+    <menu id="controls">
+        <button onclick="zoomin()"><i class="fas fa-search-plus"></i></button><br><br>
+
+        <button onclick="zoomout()"><i class="fas fa-search-minus"></i></button><br><br>
+
+
+        <button onclick="reset()"><i class="fas fa-expand"></i></button> <br><br>
+
+        <button onclick="lock()"><i class="fas fa-lock"></i></button><br><br>
+        <button onclick="unlock()"><i class="fas fa-unlock"></i></button><br><br>
+
+        <input type="text" name="" id="myWords">
+
+        <button onclick="mydraw()">Add</button>
+    </menu>
+
+
+    <script>
+        var img = new Image();
+        console.log(img)
+        img.onload = function () {
+            model.draw()
+        }
+        // img.src = "web.svg";
+
+
+
+        var Figures = {
+            Rectangle: function (ctx, node) {
+                ctx.beginPath();
+                ctx.fillStyle = node.fillStyle;
+                ctx.strokeStyle = "yellow";
+                ctx.fillRect(node.x, node.y, node.w, node.h);
+                ctx.fillStyle = "yellow";
+                ctx.font = "10px Verdana";
+                ctx.textBaseline = "top";
+                node.textfill(ctx);
+            },
+            Circle: function (ctx, node) {
+                ctx.beginPath();
+                ctx.fillStyle = node.fillStyle;
+                ctx.ellipse(node.x + node.w / 2, node.y + node.h / 2, node.w / 2, node.h / 2, 0, 0, 2 * Math.PI);
+                ctx.fill();
+                node.textfill(ctx);
+            },
+            Diamond: function (ctx, node) {
+                ctx.beginPath();
+                ctx.fillStyle = node.fillStyle;
+                ctx.moveTo(node.x, node.y + node.h / 2);
+                ctx.lineTo(node.x + node.w / 2, node.y);
+                ctx.lineTo(node.x + node.w, node.y + node.h / 2);
+                ctx.lineTo(node.x + node.w / 2, node.y + node.h);
+                ctx.fill();
+                node.textfill(ctx);
+            },
+            Icon: function (ctx, node) {
+                ctx.beginPath();
+                ctx.fillStyle = node.fillStyle;
+                ctx.strokeStyle = "blue";
+                ctx.fillRect(node.x, node.y, node.w, node.h);
+                ctx.drawImage(img, node.x - 24, node.y - 10, 150, 116);
+                ctx.fillStyle = "black";
+                ctx.textAlign = "left"
+                ctx.fillText(node.text, node.x + 5, node.y + 85)
+                ctx.stroke();
+            }
+        }
+
+
+
+
+        var connectorDecoration = {
+            fillStyle: "yellow", strokeStyle: "blue",
+            highlightStrokeStyle: "red", highlightText: "black"
+        };
+
+        console.log(connectorDecoration)
+        var connectorDecoration1 = {
+            fillStyle: "red", strokeStyle: "orange",
+            highlightStrokeStyle: "yellow", highlightText: "red"
+        };
+        console.log(connectorDecoration1)
+        var optionsInput = {
+            dropAllowed: true,
+            dragAllowed: false,
+            radius: 7
+        };
+        var optionsInput1 = {
+            dropAllowed: true,
+            dragAllowed: false,
+            radius: 0
+        };
+
+
+
+
+
+        var optionsOutput = { dropAllowed: false, dragAllowed: true, radius: 7 };
+
+        var connectorsf = [
+            new model.connector(.50, .0, "input", "input1", connectorDecoration1, optionsInput1),
+
+            new model.connector(.50, 1, "output", "output1", connectorDecoration, optionsOutput),
+            // new model.connector(1, .6, "mixed", "mixed connector", connectorDecoration),
+        ];
+
+        var connectors = [
+            new model.connector(.50, .0, "input", "input1", connectorDecoration1, optionsInput),
+
+            new model.connector(.50, 1, "output", "output1", connectorDecoration, optionsOutput),
+            // new model.connector(1, .6, "mixed", "mixed connector", connectorDecoration),
+        ];
+
+
+        var connectors2 = [
+            new model.connector(0.75, .75, "output")
+        ];
+        // model.addNode(new model.node(250,80,150,150,connectors2,"A Diamond, click on the corner handle to resize.","yellow", "Diamond"));
+        model.addNode(new model.node(280, 50, 150, 100, connectorsf, "SHASHI", "grey", "Rectangle"));
+
+        // model.addNode(new model.node(470, 50, 100, 100, connectors, "An Image", "white", "Icon"));
+        // model.addNode(new model.node(670, 250, 150, 100, connectors, "A Rectangle, drag from the diamond to here to link.", "Cyan", "Rectangle"));
+
+        // model.addLink(new model.link(0, 3, 1, 0, "Link text"));
+        //model.addLink(new model.link(3,4,1,0,"dblclick me to edit","straight"));
+
+        model.init("myCanvas");
+        model.draw();
+
+        // Add an event listener
+        // document.addEventListener("selectionChanged", function (e) {
+        //     document.all("divSelectedNode").innerText = "Selected node:" + e.detail;
+        // });
+        var x = 80;
+        function mydraw() {
+            // alert("SHASHI")
+            x += 140;
+            var myWords = document.getElementById('myWords').value;
+            console.log(myWords)
+            model.addNode(new model.node(x, 250, 150, 100, connectors, myWords, "grey", "Rectangle"));
+
+        }
+
+    </script>
+
+    <script type="text/javascript">
+        function zoomin() {
+            var GFG = document.getElementById("myCanvas");
+            var currHeight = GFG.clientHeight;
+            GFG.style.height = (currHeight + 40) + "px";
+        }
+        function zoomout() {
+            var GFG = document.getElementById("myCanvas");
+            var currHeight = GFG.clientHeight;
+            GFG.style.height = (currHeight - 40) + "px";
+        }
+
+        function reset() {
+            var GFG = document.getElementById("myCanvas");
+            console.log(GFG)
+            var currHeight = GFG.clientHeight;
+         
+            GFG.style.height = (500 ) + "px";
+           
+        }
+
+        function lock() { 
+          var confirm1  =   confirm("Are you sure to lock the screen ? ");
+          console.log(confirm1)
+          if(confirm1){
+            $("#container").draggable();
+          }
+         
+        }
+
+
+        function unlock(){
+            alert("unlock")
+            location.reload();
+        }
+
+
+
+    </script>
+
+</body>
+
+</html>
